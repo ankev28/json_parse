@@ -66,8 +66,8 @@ void traverse(int depth, node cur, bool begin_with_tab) {
         }
 
         cout << '[' << endl;
-        for (int i = 0; i < cur.get_vector().size(); i++) {
-            for (int i = 0; i < depth + 1; i++) {
+        for (size_t i = 0; i < cur.get_vector().size(); i++) {
+            for (int j = 0; j < depth + 1; j++) {
                 cout << tab;
             }
             traverse(depth+1, cur.get_vector().at(i), true);
