@@ -198,8 +198,6 @@ void node::breakdown_recursively(string json) {
                         return;
                     }
                     string key_clean = strip_outer_quotation_marks(key_val.first);
-                    // cout << "key : " << key_clean << endl;
-                    // cout << "val : " << key_val.second << endl;
                     node *val_to_node = new node(key_val.second);
                     pair<string, node> to_insert = make_pair(key_clean, *val_to_node);
 
@@ -233,8 +231,6 @@ void node::breakdown_recursively(string json) {
                         return;
                     }
                     string key_clean = strip_outer_quotation_marks(key_val.first);
-                    // cout << "key : " << key_clean << endl;
-                    // cout << "val : " << key_val.second << endl;
                     node *val_to_node = new node(key_val.second);
                     pair<string, node> to_insert = make_pair(key_clean, *val_to_node);
 
@@ -288,7 +284,6 @@ void node::breakdown_recursively(string json) {
             bool is_valid = string_validate(input);
             if (is_valid) {
                 str_data = strip_outer_quotation_marks(input);
-                // cout << "string value : " << str_data << endl;
             }
             else {
                 settype(invalidtype);
@@ -302,7 +297,6 @@ void node::breakdown_recursively(string json) {
 
 
 node::node(string input) {
-    // string begin{input[0]};
     self_string = input;
     breakdown_recursively(input);
 }
