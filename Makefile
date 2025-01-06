@@ -26,5 +26,5 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 # Clean up
 clean:
-	mkdir obj/
-	rm -f $(OBJECTS) $(TARGET) 
+	rm -rf $(OBJECTS)
+	rm -f $(TARGET) 

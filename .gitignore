@@ -35,4 +35,4 @@
 .vscode/
 
 # Binary
-json_to_map
+json_parse
