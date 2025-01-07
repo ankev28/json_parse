@@ -18,7 +18,12 @@ string preprocess(string input, int &type) {
         begin++;
     }
 
-    if (input.size() < 1 || begin >= input.size()) {
+    if (input.empty()) {
+        type = emptytype;
+        return "";
+    }
+
+    if (begin >= input.size()) {
         type = invalidtype;
         return "";
         // basically invalid input here

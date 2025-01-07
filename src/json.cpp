@@ -45,6 +45,18 @@ bool json::clear() {
     return true;
 }
 
+// an empty vector will always have a emptytype node inside (ie. size 1, but the node didn't have data)
+bool is_vector_node_empty(vector<node> v) {
+    if (v.size() > 1) {
+        return false;
+    }
+    if (v.size() == 1) {
+        if (v.at(0).gettype() == emptytype) {
+            return true;
+        }
+    }
+    return false;
+}
 
 // recursive helper for pretty_print()
 // currently may be buggy with formatting though
@@ -64,26 +76,35 @@ void traverse(int depth, node cur, bool begin_with_tab) {
                 cout << tab;
             }
         }
-
-        cout << '[' << endl;
-        for (size_t i = 0; i < cur.get_vector().size(); i++) {
-            for (int j = 0; j < depth + 1; j++) {
-                cout << tab;
+        if (is_vector_node_empty(cur.get_vector())) {
+            if (begin_with_tab) {
+                cout << '[' << ']';
             }
-            traverse(depth+1, cur.get_vector().at(i), true);
-            if (i < cur.get_vector().size() - 1) {
-                cout << ',' << endl;
+            else {
+                cout << '[' << ']' << endl;
             }
-        }
-        cout << endl;
-        for (int i = 0; i < depth; i++) {
-            cout << tab;
-        }
-        if (begin_with_tab) {
-            cout << ']';
         }
         else {
-            cout << ']' << endl;
+            cout << '[' << endl;
+            for (size_t i = 0; i < cur.get_vector().size(); i++) {
+                for (int j = 0; j < depth + 1; j++) {
+                    cout << tab;
+                }
+                traverse(depth+1, cur.get_vector().at(i), true);
+                if (i < cur.get_vector().size() - 1) {
+                    cout << ',' << endl;
+                }
+            }
+            cout << endl;
+            for (int i = 0; i < depth; i++) {
+                cout << tab;
+            }
+            if (begin_with_tab) {
+                cout << ']';
+            }
+            else {
+                cout << ']' << endl;
+            }
         }
     }
     else if (cur_type == maptype) {

@@ -11,7 +11,8 @@ typedef enum truetype
     invalidtype = -1,
     stringtype   = 0,
     vectortype   = 1,
-    maptype      = 2
+    maptype      = 2,
+    emptytype    = 3,
 } truetype;
 
 class node {
