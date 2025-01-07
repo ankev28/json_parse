@@ -79,7 +79,12 @@ void traverse(int depth, node cur, bool begin_with_tab) {
         for (int i = 0; i < depth; i++) {
             cout << tab;
         }
-        cout << ']' << endl;
+        if (begin_with_tab) {
+            cout << ']';
+        }
+        else {
+            cout << ']' << endl;
+        }
     }
     else if (cur_type == maptype) {
         cout << '{' << endl;

@@ -98,13 +98,17 @@ bool string_validate(string input) {
     else if (input == "null" || input == "true" || input == "false") {// the exact word
         ret = true;
     }
-    else if (input.size() >= 1 && isdigit(input.at(0))) {
-        string::const_iterator it = input.begin();
-        while (it != input.end()) {
-            if (!isdigit(*it)) {
-                return false;
+    else {
+        for (size_t i = 0; i < input.size(); i++) {
+            if (isdigit(input.at(i))) {
+                try {
+                    stoll(input); 
+                    break;
+                }
+                catch(exception & e) {
+                    return false; // what kind of number object is this huh ??
+                }
             }
-            ++it;
         }
         ret = true;
     }
