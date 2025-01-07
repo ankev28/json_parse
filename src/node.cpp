@@ -137,10 +137,10 @@ pair<string, string> get_key_and_pair(string raw, bool &is_valid) {
                 i++;
                 continue;
             }
-            if (open.find(raw.at(i)) != open.end() || (raw.at(i) == '"' && (key_pair_divider.empty() || (!key_pair_divider.empty() && key_pair_divider.top() != '"')))) {
+            if (open.find(raw.at(i)) != open.end() || (raw.at(i) == '"' && (i == 0 || raw.at(i-1) != '\\') && (key_pair_divider.empty() || (!key_pair_divider.empty() && key_pair_divider.top() != '"')))) {
                 key_pair_divider.push(raw.at(i));
             }
-            else if ((closed.find(raw.at(i)) != closed.end() && closed.at(raw.at(i)) == key_pair_divider.top()) || (raw.at(i) == '"' && !key_pair_divider.empty() && key_pair_divider.top() == '"')) {
+            else if ((closed.find(raw.at(i)) != closed.end() && closed.at(raw.at(i)) == key_pair_divider.top()) || (raw.at(i) == '"' && (i > 0 && raw.at(i-1) != '\\') && !key_pair_divider.empty() && key_pair_divider.top() == '"')) {
                 key_pair_divider.pop();
             }
             key.push_back(raw.at(i));
@@ -148,10 +148,10 @@ pair<string, string> get_key_and_pair(string raw, bool &is_valid) {
             continue;
         }
         else {
-            if (open.find(raw.at(i)) != open.end() || (raw.at(i) == '"' && (key_pair_divider.empty() || (!key_pair_divider.empty() && key_pair_divider.top() != '"')))) {
+            if (open.find(raw.at(i)) != open.end() || (raw.at(i) == '"' && (i == 0 || raw.at(i-1) != '\\') && (key_pair_divider.empty() || (!key_pair_divider.empty() && key_pair_divider.top() != '"')))) {
                 key_pair_divider.push(raw.at(i));
             }
-            else if ((closed.find(raw.at(i)) != closed.end() && closed.at(raw.at(i)) == key_pair_divider.top()) || (raw.at(i) == '"' && !key_pair_divider.empty() && key_pair_divider.top() == '"')) {
+            else if ((closed.find(raw.at(i)) != closed.end() && closed.at(raw.at(i)) == key_pair_divider.top()) || (raw.at(i) == '"' && (i > 0 && raw.at(i-1) != '\\') && !key_pair_divider.empty() && key_pair_divider.top() == '"')) {
                 key_pair_divider.pop();
             }
             val.push_back(raw.at(i));
@@ -185,7 +185,9 @@ void node::breakdown_recursively(string json) {
     string input = preprocess(json, cur_type);
     if (cur_type == invalidtype) {
         settype(invalidtype);
-        return;
+        string error_msg = "Invalid input detected in following object: \n";
+        error_msg.append(json);
+        throw invalid_argument(error_msg);
     }
 
     settype(cur_type);
@@ -201,9 +203,9 @@ void node::breakdown_recursively(string json) {
                 if (parse.size() == 1 && parse.top() == '{' && input[i] == '}') {
                     pair<string, string> key_val = get_key_and_pair(raw, check_map);
                     if (!check_map) {
-                        cout << "invalid input map formatting" << endl;
-                        cout << raw << endl;
-                        return;
+                        string error_msg = "Invalid input map formatting at following: \n";
+                        error_msg.append(raw);
+                        throw invalid_argument(error_msg);
                     }
                     string key_clean = strip_outer_quotation_marks(key_val.first);
                     node *val_to_node = new node(key_val.second);
@@ -234,9 +236,9 @@ void node::breakdown_recursively(string json) {
                     i++;
                     pair<string, string> key_val = get_key_and_pair(raw, check_map);
                     if (!check_map) {
-                        cout << "invalid input map formatting" << endl;
-                        cout << raw << endl;
-                        return;
+                        string error_msg = "Invalid input map formatting at following: \n";
+                        error_msg.append(raw);
+                        throw invalid_argument(error_msg);
                     }
                     string key_clean = strip_outer_quotation_marks(key_val.first);
                     node *val_to_node = new node(key_val.second);
