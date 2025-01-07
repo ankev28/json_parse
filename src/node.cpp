@@ -1,6 +1,7 @@
 #include "node.h"
 #include <stack>
 #include <stdexcept>
+#include <sstream>
 
 void node::settype(int val) {
     type = val;
@@ -84,6 +85,13 @@ string strip_outer_quotation_marks(string input) {
     return ret;
 }
 
+// thanks google for recommending this method, although i wouldn't have thought of it myself
+bool is_number(const string & s) {
+    istringstream iss(s);
+    double d;
+    return iss >> d && iss.eof();
+}
+
 // if we determine it's a string, then it can either only be the following:
 // word surrounded by ""
 // number (ie. 30)
@@ -99,18 +107,9 @@ bool string_validate(string input) {
         ret = true;
     }
     else {
-        for (size_t i = 0; i < input.size(); i++) {
-            if (isdigit(input.at(i))) {
-                try {
-                    stoll(input); 
-                    break;
-                }
-                catch(exception & e) {
-                    return false; // what kind of number object is this huh ??
-                }
-            }
+        if (is_number(input)) {
+            ret = true;
         }
-        ret = true;
     }
     return ret;
 }
