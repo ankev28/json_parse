@@ -58,6 +58,23 @@ bool is_vector_node_empty(vector<node> v) {
     return false;
 }
 
+// an empty map will always have a emptytype node inside (but the node didn't have data)
+bool is_map_node_empty(map<string, node> s) {
+    if (s.size() > 1) {
+        return false;
+    }
+
+    map<string, node>::iterator it;
+    if (s.size() == 1) {
+        for (it = s.begin(); it != s.end(); it++) { // the only element
+            if (s.at(it->first).gettype() == emptytype) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 // recursive helper for pretty_print()
 // currently may be buggy with formatting though
 void traverse(int depth, node cur, bool begin_with_tab) {
@@ -108,28 +125,32 @@ void traverse(int depth, node cur, bool begin_with_tab) {
         }
     }
     else if (cur_type == maptype) {
-        cout << '{' << endl;
+        if (is_map_node_empty(cur.get_map())) {
+            cout << '{' << '}';
+        }
+        else {
+            cout << '{' << endl;
 
-        map<string, node>::iterator it;
-        map<string, node>::iterator final_it = cur.get_map().end();
-        --final_it;
+            map<string, node>::iterator it;
+            map<string, node>::iterator final_it = cur.get_map().end();
+            --final_it;
 
-        for (it = cur.get_map().begin(); it != cur.get_map().end(); it++) {
-            for (int i = 0; i < depth + 1; i++) {
+            for (it = cur.get_map().begin(); it != cur.get_map().end(); it++) {
+                for (int i = 0; i < depth + 1; i++) {
+                    cout << tab;
+                }
+                cout << '"' << it->first << "\" : ";
+                traverse(depth+1, cur.get_map().at(it->first), true);
+                if (it != final_it) {
+                    cout << ',' << endl;
+                }
+            }
+            cout << endl;
+            for (int i = 0; i < depth; i++) {
                 cout << tab;
             }
-
-            cout << '"' << it->first << "\" : ";
-            traverse(depth+1, cur.get_map().at(it->first), true);
-            if (it != final_it) {
-                cout << ',' << endl;
-            }
+            cout << '}';
         }
-        cout << endl;
-        for (int i = 0; i < depth; i++) {
-            cout << tab;
-        }
-        cout << '}';
     }
 }
 

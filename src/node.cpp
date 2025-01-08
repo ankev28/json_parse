@@ -129,6 +129,11 @@ pair<string, string> get_key_and_pair(string raw, bool &is_valid) {
     map<char, char> open = {{'{','}'}, {'[',']'}};
     pair<string, string> ret("", "");
 
+    if (raw.empty()) {
+        is_valid = true;
+        return make_pair(key, val);
+    }
+
     size_t i = 0;
     while (i < raw.size()) {
         if (found == false) {
@@ -261,6 +266,11 @@ void node::breakdown_recursively(string json) {
                 if (parse.size() == 1 && parse.top() == '[' && input[i] == ']') {
                     node *to_push_back = new node(raw);
                     list_data.push_back(*to_push_back);
+                    if (raw.empty() && list_data.size() > 1) {
+                        string error_msg = "Invalid input list formatting at following: \n";
+                        error_msg.append(input);
+                        throw invalid_argument(error_msg);
+                    }
                     break;
                 }
                 // we find an open symbol and it's not in a string element, push
@@ -270,16 +280,31 @@ void node::breakdown_recursively(string json) {
                 // we find a matching closed symbol, pop
                 else if (closed.find(input[i]) != closed.end() && parse.top() == closed.at(input[i])) {
                     parse.pop();
+                    if (parse.size() == 1 && i < input.size() - 1 && open.find(input.at(i+1)) != open.end() && input.at(i+1) != '"') {
+                        string error_msg = "Invalid input list formatting at following: \n";
+                        error_msg.append(input);
+                        throw invalid_argument(error_msg);
+                    }
                 }
                 // start of a string element in array
                 else if (input[i] == '"' && parse.top() != '"') {
                     parse.push(input[i]);
                 }
                 // end of a string element in array
-                else if (input[i] == '"' && parse.top() == '"') {
+                else if (input[i] == '"' && input[i-1] != '\\' && parse.top() == '"') {
                     parse.pop();
+                    if (parse.size() == 1 && i < input.size() - 1 && open.find(input.at(i+1)) != open.end() && (input.at(i+1) != '"')) {
+                        string error_msg = "Invalid input list formatting at following: \n";
+                        error_msg.append(input);
+                        throw invalid_argument(error_msg);
+                    }
                 }
                 else if ((input[i] == ',') && parse.size() == 1) {
+                    if (raw.empty()) {
+                        string error_msg = "Invalid input list formatting at following: \n";
+                        error_msg.append(input);
+                        throw invalid_argument(error_msg);
+                    }
                     i++;
                     node *to_push_back = new node(raw);
                     list_data.push_back(*to_push_back);
@@ -297,9 +322,9 @@ void node::breakdown_recursively(string json) {
             }
             else {
                 settype(invalidtype);
-                cout << "invalid input string formatting" << endl;
-                cout << input << endl;
-                return;
+                string error_msg = "Invalid input string formatting at following: \n";
+                error_msg.append(input);
+                throw invalid_argument(error_msg);
             }
         }
     }
